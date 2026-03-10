@@ -1,5 +1,5 @@
 body {
-    font-family: Arial;
+    font-family: Red Hat Mono;
     text-align: center;
     background-color: #f5f5f5;
 }
@@ -79,4 +79,5 @@ button {
 .fail {
     color: red;
     font-weight: bold;
+
 }
