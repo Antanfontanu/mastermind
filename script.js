@@ -1,9 +1,13 @@
 // ===== KONFIGŪRACIJA =====
 
-const secretCode = ["red", "blue", "green", "yellow"]; 
+const secretCode = ["#C6B7F9", "#FFB1ED", "#FFBD9F", "#F9F871"]; 
 const scriptURL = "https://script.google.com/macros/s/AKfycby3e_nwKmtw9BoblSq5S1AXjn391SlI4zSvn2ppQ_2xlCoZenSU4PvTGbYJzzBfr3mO/exec";
 
-const colors = ["red", "blue", "green", "yellow", "orange", "purple"];
+const colors = ["#6DD2B8", "#83ADF1","#C6B7F9", "#FFB1ED", "#FFBD9F", "#F9F871"];
+
+const winGif = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExajRmZzRuc29yYXQ2eHB3bWsxNDMycTllcTlyeXJvenJpajh4NDI4ayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/a0h7sAqON67nO/giphy.gif";
+
+const loseGif = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2NidTZ0czA4eGIxMDY0cGkwaTdyZmFsNWp4cW1md2dxbXVydTIxcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/10h8CdMQUWoZ8Y/giphy.gif";
 
 let playerName = "";
 let attempts = 0;
@@ -11,6 +15,8 @@ const maxAttempts = 5;
 
 let selectedColor = null;
 let currentGuess = [null, null, null, null];
+
+let gameLocked = false;
 
 // ===== PALETĖ =====
 const palette = document.querySelector(".palette");
@@ -21,14 +27,17 @@ colors.forEach(color => {
     div.style.backgroundColor = color;
 
     div.addEventListener("click", () => {
-        selectedColor = color;
+        if (gameLocked) return;
+        // surandam pirma laisvą slot
+        const index = currentGuess.indexOf(null);
 
-        // highlight selected
-        document.querySelectorAll(".color-option").forEach(el => {
-            el.classList.remove("selected");
-        });
-        div.classList.add("selected");
-    });
+        if (index === -1) return; // jei visi užpildyti
+
+        currentGuess[index] = color;
+
+        const slot = document.querySelector(`.slot[data-index="${index}"]`);
+        slot.style.backgroundColor = color;
+});
 
     palette.appendChild(div);
 });
@@ -36,6 +45,7 @@ colors.forEach(color => {
 // ===== SLOT PASIRINKIMAS =====
 document.querySelectorAll(".slot").forEach(slot => {
     slot.addEventListener("click", () => {
+        if (gameLocked) return;
         if (!selectedColor) return;
 
         const index = slot.getAttribute("data-index");
@@ -65,7 +75,7 @@ function updateAttemptInfo() {
 
 // ===== SPĖJIMAS =====
 function makeGuess() {
-
+    if (gameLocked) return;
     if (attempts >= maxAttempts) return;
 
     if (currentGuess.includes(null)) {
@@ -82,16 +92,16 @@ function makeGuess() {
 
     // check win
     if (result.black === 4) {
-        alert(`LAIMĖJAI per ${attempts} spėjimus!`);
         saveResult(true);
+        showResult(true);
         disableGame();
         return;
     }
 
     // check max attempts
     if (attempts === maxAttempts) {
-        alert("Pralaimėjai!");
         saveResult(false);
+        showResult(false);
         disableGame();
         showSecretCode();
         return;
@@ -99,6 +109,21 @@ function makeGuess() {
 
     resetSlots();
     updateAttemptInfo();
+}
+
+function removeLast() {
+
+    // surandam paskutinį užpildytą slot
+    const index = currentGuess.lastIndexOf(
+        currentGuess.slice().reverse().find(c => c !== null)
+    );
+
+    if (index === -1) return;
+
+    currentGuess[index] = null;
+
+    const slot = document.querySelector(`.slot[data-index="${index}"]`);
+    slot.style.backgroundColor = "lightgray";
 }
 
 // ===== VERTINIMAS =====
@@ -128,6 +153,26 @@ function evaluateGuess(guess) {
     }
 
     return { black, white };
+}
+
+function showResult(win) {
+
+    const box = document.getElementById("resultBox");
+    const text = document.getElementById("resultText");
+    const attemptsText = document.getElementById("resultAttempts");
+    const gif = document.getElementById("resultGif");
+
+    box.style.display = "block";
+
+    if (win) {
+        text.innerText = "Laimėjai!";
+        attemptsText.innerText = `Atspėjai per ${attempts} bandymus`;
+        gif.src = winGif;
+    } else {
+        text.innerText = "Pralaimėjai";
+        attemptsText.innerText = `Nepavyko atspėti per ${maxAttempts} bandymus`;
+        gif.src = loseGif;
+    }
 }
 
 // ===== RODOM SPĖJIMUS SU PEG =====
@@ -221,7 +266,11 @@ function resetSlots() {
 }
 
 function disableGame() {
-    document.querySelector("button").disabled = true;
+    gameLocked = true;
+
+    document.querySelectorAll("button").forEach(btn => {
+        btn.disabled = true;
+    });
 }
 
 // ===== SAUGOJAM REZULTATUS =====
