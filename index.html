@@ -9,6 +9,12 @@
 
 <h1>Mastermind</h1>
 
+<div id="resultBox" style="display:none; text-align:center; margin-bottom:20px;">
+    <h2 id="resultText"></h2>
+    <p id="resultAttempts"></p>
+    <img id="resultGif" style="max-width:200px;">
+</div>
+
 <div id="login">
     <input type="text" id="playerName" placeholder="Įvesk vardą">
     <button onclick="startGame()">Pradėti</button>
@@ -25,6 +31,8 @@
     </div>
 
     <div class="palette"></div>
+
+    <button onclick="removeLast()">Ištrinti paskutinį</button>
 
     <button onclick="makeGuess()">Spėti</button>
 
