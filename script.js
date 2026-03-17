@@ -1,6 +1,6 @@
 // ===== KONFIGŪRACIJA =====
 
-const secretCode = ["#C6B7F9", "#FFB1ED", "#FFBD9F", "#F9F871"]; 
+const secretCode = ["#FFBD9F", "#6DD2B8", "#C6B7F9", "#F9F871"]; 
 const scriptURL = "https://script.google.com/macros/s/AKfycby3e_nwKmtw9BoblSq5S1AXjn391SlI4zSvn2ppQ_2xlCoZenSU4PvTGbYJzzBfr3mO/exec";
 
 const colors = ["#6DD2B8", "#83ADF1","#C6B7F9", "#FFB1ED", "#FFBD9F", "#F9F871"];
