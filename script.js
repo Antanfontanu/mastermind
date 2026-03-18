@@ -11,7 +11,7 @@ const loseGif = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2NidTZ0czA4e
 
 let playerName = "";
 let attempts = 0;
-const maxAttempts = 6;
+const maxAttempts = 7;
 
 let selectedColor = null;
 let currentGuess = [null, null, null, null];
